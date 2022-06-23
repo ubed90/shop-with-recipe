@@ -10,6 +10,7 @@
             placeholder="Enter Name"
             name="name"
             class="form-control"
+            #nameInput
           />
         </div>
         <div class="col-sm-2 form-group">
@@ -20,6 +21,7 @@
             placeholder="Enter amount"
             name="amount"
             class="form-control"
+            #amountInput
           />
         </div>
       </div>
@@ -29,6 +31,7 @@
             class="btn btn-success"
             style="margin-right: 10px"
             type="submit"
+            (click)="onAddItem($event)"
           >
             Add
           </button>
