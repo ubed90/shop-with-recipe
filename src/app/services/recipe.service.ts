@@ -9,30 +9,32 @@ import { Ingredient } from '../shared/model/ingredient.model';
 export class RecipeService {
   recipeChanged = new Subject<Recipe[]>();
 
-  private recipes: Recipe[] = [
-    new Recipe(
-      'Burger',
-      'A Mexican Burger',
-      'assets/images/recipes/burgaz.png',
-      [
-        new Ingredient('Burger Bun', 2),
-        new Ingredient('Mayonnaise', 1),
-        new Ingredient('Cheese', 1),
-        new Ingredient('Meat', 1),
-      ]
-    ),
-    new Recipe(
-      'Fries',
-      'Spanish French Fries',
-      'assets/images/recipes/fries.jpg',
-      [
-        new Ingredient('Potatoes', 10),
-        new Ingredient('Pepper', 1),
-        new Ingredient('Cheese', 1),
-        new Ingredient('Sauce', 1),
-      ]
-    ),
-  ];
+  // private recipes: Recipe[] = [
+  //   new Recipe(
+  //     'Burger',
+  //     'A Mexican Burger',
+  //     'assets/images/recipes/burgaz.png',
+  //     [
+  //       new Ingredient('Burger Bun', 2),
+  //       new Ingredient('Mayonnaise', 1),
+  //       new Ingredient('Cheese', 1),
+  //       new Ingredient('Meat', 1),
+  //     ]
+  //   ),
+  //   new Recipe(
+  //     'Fries',
+  //     'Spanish French Fries',
+  //     'assets/images/recipes/fries.jpg',
+  //     [
+  //       new Ingredient('Potatoes', 10),
+  //       new Ingredient('Pepper', 1),
+  //       new Ingredient('Cheese', 1),
+  //       new Ingredient('Sauce', 1),
+  //     ]
+  //   ),
+  // ];
+
+  private recipes: Recipe[] = [];
 
   constructor() {}
 
@@ -56,6 +58,11 @@ export class RecipeService {
 
   deleteRecipe(index: number) {
     this.recipes.splice(index , 1);
+    this.recipeChanged.next(this.recipes.slice());
+  }
+
+  setRecipes(recipes: Recipe[]) {
+    this.recipes = recipes;
     this.recipeChanged.next(this.recipes.slice());
   }
 }
