@@ -1,4 +1,6 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 import { BackendService } from '../services/backend.service';
 
 @Component({
@@ -6,12 +8,23 @@ import { BackendService } from '../services/backend.service';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit , OnDestroy {
   collapsed = true;
 
-  constructor(private backendService: BackendService) {}
+  isAuthenticated: boolean = false;
+  private userSub!: Subscription;
 
-  ngOnInit(): void {}
+  constructor(private backendService: BackendService , private authService: AuthService) {}
+
+  ngOnInit(): void {
+    this.userSub = this.authService.user.subscribe(user => {
+      this.isAuthenticated = !!user;
+    })
+  }
+
+  ngOnDestroy(): void {
+    this.userSub.unsubscribe();
+  }
 
   onSaveData() {
     this.backendService.storeRecipes();
@@ -21,5 +34,9 @@ export class HeaderComponent implements OnInit {
     this.backendService.fetchRecipes().subscribe(data => {
       console.log(data)
     })
+  }
+
+  onLogOut() {
+    this.authService.logoutUser();
   }
 }

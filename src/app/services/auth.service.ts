@@ -1,8 +1,10 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { BehaviorSubject, Subject, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { User } from '../model/user.model';
 
 export interface AuthResponseData {
   idToken: string;
@@ -17,7 +19,13 @@ export interface AuthResponseData {
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private http: HttpClient) {}
+  // Previous With Normal Subject
+  // user = new Subject<User>();
+
+  // Latest with behavious Subject
+  user = new BehaviorSubject<User | null>(null);
+
+  constructor(private http: HttpClient , private router: Router) {}
 
   signUp(signUpData: { email: string; password: string }) {
     return this.http
@@ -29,7 +37,10 @@ export class AuthService {
         }
       )
       .pipe(
-        catchError(this.handleError)
+        catchError(this.handleError),
+        tap((resData) => {
+          this.handleAuthentication(<string>resData.email , <string>resData.localId , resData.idToken , resData.expiresIn);
+        })
       );
   }
 
@@ -40,8 +51,29 @@ export class AuthService {
         returnSecureToken: true,
       })
       .pipe(
-        catchError(this.handleError)
+        catchError(this.handleError),
+        tap((resData) => {
+          this.handleAuthentication(<string>resData.email , <string>resData.localId , resData.idToken , resData.expiresIn);
+        })
       );
+  }
+
+  logoutUser() {
+    this.user.next(null);
+    this.router.navigate(['/auth']);
+  }
+
+  private handleAuthentication(email: string, id: string, token: string , expiresIn: string) {
+    const tokenExpiration = new Date(
+      new Date().getTime() + +expiresIn * 1000
+    );
+    const user = new User(
+      email,
+      id,
+      token,
+      tokenExpiration
+    );
+    this.user.next(user);
   }
 
   private handleError(errorResponse: HttpErrorResponse) {
@@ -81,9 +113,6 @@ export class AuthService {
     return throwError(() => new Error(errorMessage));
   }
 }
-
-
-
 
 // For Reference
 
