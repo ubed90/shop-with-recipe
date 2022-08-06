@@ -1,19 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
-  title = 'shop-with-recipe';
-  featureToShow: string = 'recipe';
+export class AppComponent implements OnInit {
 
-  onNavigate(feature: string): void {
-    this.featureToShow = feature;
+  constructor(private authService: AuthService) {}
+
+  ngOnInit(): void {
+    this.authService.autoLogin();
   }
+
 }
 
+
+
+
+// Previous Baketi
+
+// title = 'shop-with-recipe';
+//   featureToShow: string = 'recipe';
+
+//   onNavigate(feature: string): void {
+//     this.featureToShow = feature;
+//   }
+
+
+// Firebase Data
 
 // // Import the functions you need from the SDKs you need
 // import { initializeApp } from "firebase/app";
